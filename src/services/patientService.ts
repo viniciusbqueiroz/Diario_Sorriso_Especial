@@ -138,6 +138,7 @@ export async function createRecord(
       body: JSON.stringify(payload),
     },
   );
+  console.log(response);
 
   if (!response.ok) {
     let backendMessage = "";

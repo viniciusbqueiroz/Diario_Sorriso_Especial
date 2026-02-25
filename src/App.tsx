@@ -801,7 +801,6 @@ export default function App() {
       };
       // Log do payload enviado
       // eslint-disable-next-line no-console
-      console.log("Payload enviado para createRecord:", payload);
       await createRecord(selectedPatientId, payload);
 
       const records = await fetchRecords(selectedPatientId);
@@ -818,7 +817,6 @@ export default function App() {
       // Log detalhado para depuração
       if (error && typeof error === "object") {
         // eslint-disable-next-line no-console
-        console.error("Erro ao salvar registro:", error);
       }
       setSyncError(message);
       Alert.alert("Erro", message + "\nVeja o console para detalhes.");
