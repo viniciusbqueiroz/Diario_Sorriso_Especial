@@ -356,86 +356,86 @@ app.post("/api/patients/:id/records", async (req: Request, res: Response) => {
     }
 
     // Se fornecido, validar triggers
-    // if (triggers !== undefined) {
-    //   if (!Array.isArray(triggers)) {
-    //     console.error("Campo 'triggers' inválido (não é array)", triggers);
-    //     return res.status(400).json({ message: "Campo 'triggers' inválido." });
-    //   }
-    //   // Se não for vazio, validar conteúdo
-    //   if (
-    //     triggers.length > 0 &&
-    //     triggers.some((trigger) => !validTriggers.includes(trigger))
-    //   ) {
-    //     console.error("Campo 'triggers' inválido (valor)", triggers);
-    //     return res.status(400).json({ message: "Campo 'triggers' inválido." });
-    //   }
-    // }
+    if (triggers !== undefined) {
+      if (!Array.isArray(triggers)) {
+        console.error("Campo 'triggers' inválido (não é array)", triggers);
+        return res.status(400).json({ message: "Campo 'triggers' inválido." });
+      }
+      // Se não for vazio, validar conteúdo
+      if (
+        triggers.length > 0 &&
+        triggers.some((trigger) => !validTriggers.includes(trigger))
+      ) {
+        console.error("Campo 'triggers' inválido (valor)", triggers);
+        return res.status(400).json({ message: "Campo 'triggers' inválido." });
+      }
+    }
 
-    // if (odontogram !== undefined) {
-    //   if (!Array.isArray(odontogram)) {
-    //     console.error("Campo 'odontogram' inválido (não é array)", odontogram);
-    //     return res
-    //       .status(400)
-    //       .json({ message: "Campo 'odontogram' inválido." });
-    //   }
-    //   // Se não for vazio, validar conteúdo
-    //   if (odontogram.length > 0) {
-    //     const hasInvalidToothRecord = odontogram.some((item) => {
-    //       if (typeof item !== "object" || item === null) {
-    //         return true;
-    //       }
+    if (odontogram !== undefined) {
+      if (!Array.isArray(odontogram)) {
+        console.error("Campo 'odontogram' inválido (não é array)", odontogram);
+        return res
+          .status(400)
+          .json({ message: "Campo 'odontogram' inválido." });
+      }
+      // Se não for vazio, validar conteúdo
+      if (odontogram.length > 0) {
+        const hasInvalidToothRecord = odontogram.some((item) => {
+          if (typeof item !== "object" || item === null) {
+            return true;
+          }
 
-    //       const toothNumber = (item as { toothNumber?: unknown }).toothNumber;
-    //       const hasCaries = (item as { hasCaries?: unknown }).hasCaries;
-    //       const hasTooth = (item as { hasTooth?: unknown }).hasTooth;
-    //       const hasPain = (item as { hasPain?: unknown }).hasPain;
-    //       const sensitivity = (item as { sensitivity?: unknown }).sensitivity;
-    //       const notes = (item as { notes?: unknown }).notes;
+          const toothNumber = (item as { toothNumber?: unknown }).toothNumber;
+          const hasCaries = (item as { hasCaries?: unknown }).hasCaries;
+          const hasTooth = (item as { hasTooth?: unknown }).hasTooth;
+          const hasPain = (item as { hasPain?: unknown }).hasPain;
+          const sensitivity = (item as { sensitivity?: unknown }).sensitivity;
+          const notes = (item as { notes?: unknown }).notes;
 
-    //       return (
-    //         typeof toothNumber !== "number" ||
-    //         !Number.isInteger(toothNumber) ||
-    //         toothNumber < 1 ||
-    //         toothNumber > 32 ||
-    //         typeof hasCaries !== "boolean" ||
-    //         typeof hasTooth !== "boolean" ||
-    //         typeof hasPain !== "boolean" ||
-    //         typeof sensitivity !== "string" ||
-    //         !validSensitivity.includes(sensitivity) ||
-    //         (notes !== undefined && typeof notes !== "string")
-    //       );
-    //     });
+          return (
+            typeof toothNumber !== "number" ||
+            !Number.isInteger(toothNumber) ||
+            toothNumber < 1 ||
+            toothNumber > 32 ||
+            typeof hasCaries !== "boolean" ||
+            typeof hasTooth !== "boolean" ||
+            typeof hasPain !== "boolean" ||
+            typeof sensitivity !== "string" ||
+            !validSensitivity.includes(sensitivity) ||
+            (notes !== undefined && typeof notes !== "string")
+          );
+        });
 
-    //     if (hasInvalidToothRecord) {
-    //       console.error("Campo 'odontogram' inválido (item)", odontogram);
-    //       return res
-    //         .status(400)
-    //         .json({ message: "Campo 'odontogram' inválido." });
-    //     }
-    //   }
-    // }
+        if (hasInvalidToothRecord) {
+          console.error("Campo 'odontogram' inválido (item)", odontogram);
+          return res
+            .status(400)
+            .json({ message: "Campo 'odontogram' inválido." });
+        }
+      }
+    }
 
-    // if (photoDataUrl !== undefined) {
-    //   if (
-    //     typeof photoDataUrl !== "string" ||
-    //     photoDataUrl.trim().length === 0
-    //   ) {
-    //     console.error("Campo 'photoDataUrl' inválido", photoDataUrl);
-    //     return res
-    //       .status(400)
-    //       .json({ message: "Campo 'photoDataUrl' inválido." });
-    //   }
+    if (photoDataUrl !== undefined) {
+      if (
+        typeof photoDataUrl !== "string" ||
+        photoDataUrl.trim().length === 0
+      ) {
+        console.error("Campo 'photoDataUrl' inválido", photoDataUrl);
+        return res
+          .status(400)
+          .json({ message: "Campo 'photoDataUrl' inválido." });
+      }
 
-    //   if (!photoDataUrl.startsWith("data:image/")) {
-    //     console.error(
-    //       "Campo 'photoDataUrl' deve ser imagem em data URL",
-    //       photoDataUrl,
-    //     );
-    //     return res.status(400).json({
-    //       message: "Campo 'photoDataUrl' deve ser imagem em data URL.",
-    //     });
-    //   }
-    // }
+      if (!photoDataUrl.startsWith("data:image/")) {
+        console.error(
+          "Campo 'photoDataUrl' deve ser imagem em data URL",
+          photoDataUrl,
+        );
+        return res.status(400).json({
+          message: "Campo 'photoDataUrl' deve ser imagem em data URL.",
+        });
+      }
+    }
 
     const record: DailyRecord = {
       id: randomUUID(),
