@@ -225,6 +225,14 @@ function buildReport(records: DailyRecord[]) {
 app.use(cors());
 app.use(express.json({ limit: "8mb" }));
 
+app.get("/", (_req: Request, res: Response) => {
+  res.json({
+    ok: true,
+    service: "diario-sorriso-backend",
+    message: "API online. Use /health para status.",
+  });
+});
+
 app.get("/health", (_req: Request, res: Response) => {
   res.json({ ok: true, service: "diario-sorriso-backend" });
 });

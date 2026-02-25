@@ -573,6 +573,23 @@ export default function App() {
     }
   };
 
+  const testBackendConnection = async () => {
+    setIsSyncing(true);
+
+    try {
+      await checkHealth();
+      setSyncError(null);
+      Alert.alert("Conexão OK", `Backend ativo em ${API_BASE_URL}`);
+    } catch {
+      const message =
+        "Não foi possível conectar ao backend. Verifique a URL e tente novamente.";
+      setSyncError(message);
+      Alert.alert("Falha de conexão", message);
+    } finally {
+      setIsSyncing(false);
+    }
+  };
+
   const clearNewPatientForm = () => {
     resetPatientFormData();
   };
@@ -909,6 +926,7 @@ export default function App() {
               setShowHistoryDateCalendar(false);
             }}
             onViewSpecificHistory={viewSpecificDateHistory}
+            onTestBackendConnection={testBackendConnection}
           />
         )}
         renderDailyStep={() => (

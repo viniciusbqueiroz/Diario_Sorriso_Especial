@@ -19,13 +19,14 @@ O projeto inclui `vercel.json` e `api/index.ts` para deploy do backend na Vercel
 1. Suba o repositório para GitHub.
 2. Na Vercel, clique em **Add New...** → **Project** e importe o repositório.
 3. Defina o **Root Directory** como `backend`.
-4. Faça o deploy e copie a URL pública (ex.: `https://diario-sorriso-backend.vercel.app`).
+4. Faça o deploy e copie a URL pública (ex.: `https://diario-sorriso-especial.vercel.app`).
 
 ### Persistência de dados
 
 - O backend usa arquivo JSON local.
 - Na Vercel, o filesystem é efêmero; os dados podem ser perdidos entre execuções.
-- Para testes, você pode usar `DB_FILE_PATH=/tmp/db.json`.
+- Na Vercel, sem `DB_FILE_PATH`, o backend usa `/tmp/db.json` automaticamente.
+- Se preferir, você pode definir `DB_FILE_PATH=/tmp/db.json` manualmente.
 - Para produção, o ideal é migrar para banco externo (Postgres, Neon, Supabase, etc.).
 
 ### Conectar o app mobile ao backend hospedado
@@ -41,7 +42,7 @@ Depois reinicie o Expo para recarregar variáveis de ambiente.
 Exemplo:
 
 ```dotenv
-EXPO_PUBLIC_API_URL=https://diario-sorriso-backend.vercel.app
+EXPO_PUBLIC_API_URL=https://diario-sorriso-especial.vercel.app
 ```
 
 ## Rotas principais

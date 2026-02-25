@@ -7,7 +7,9 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 const dbPath = process.env.DB_FILE_PATH
   ? path.resolve(process.env.DB_FILE_PATH)
-  : path.resolve(__dirname, "../data/db.json");
+  : process.env.VERCEL
+    ? "/tmp/db.json"
+    : path.resolve(__dirname, "../data/db.json");
 
 const emptyDb: DatabaseSchema = {
   patients: [],

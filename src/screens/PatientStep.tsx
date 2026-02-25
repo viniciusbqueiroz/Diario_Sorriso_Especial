@@ -61,6 +61,7 @@ type PatientStepProps = {
   onToggleHistoryDateCalendar: () => void;
   onSelectHistoryDate: (day: DateData) => void;
   onViewSpecificHistory: () => void;
+  onTestBackendConnection: () => void;
 };
 
 const medicalSpecialtyOptions = [
@@ -136,6 +137,7 @@ export function PatientStep({
   onToggleHistoryDateCalendar,
   onSelectHistoryDate,
   onViewSpecificHistory,
+  onTestBackendConnection,
 }: PatientStepProps) {
   const [showPatientDetailsModal, setShowPatientDetailsModal] = useState(false);
 
@@ -338,6 +340,19 @@ export function PatientStep({
               disabled={isSyncing}
             >
               <Text style={styles.secondaryButtonText}>📚 Ver histórico</Text>
+            </Pressable>
+
+            <Pressable
+              style={[
+                styles.secondaryButton,
+                isSyncing && styles.buttonDisabled,
+              ]}
+              onPress={onTestBackendConnection}
+              disabled={isSyncing}
+            >
+              <Text style={styles.secondaryButtonText}>
+                🔌 Testar conexão backend
+              </Text>
             </Pressable>
           </View>
         </View>
