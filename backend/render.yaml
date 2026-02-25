@@ -12,7 +12,7 @@ services:
         value: 22
       - key: DB_FILE_PATH
         value: /var/data/db.json
-    disks:
-      - name: diario-sorriso-data
-        mountPath: /var/data
-        sizeGB: 1
+    disk:
+      name: diario-sorriso-data
+      mountPath: /var/data
+      sizeGB: 1
