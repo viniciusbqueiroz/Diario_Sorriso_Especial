@@ -313,7 +313,7 @@ app.delete("/patients/:id", async (req: Request, res: Response) => {
   });
 });
 
-app.post("/patients/:id/records", async (req: Request, res: Response) => {
+app.post("/api/patients/:id/records", async (req: Request, res: Response) => {
   try {
     const patientId = getRouteParam(req.params.id);
     if (!patientId) {
@@ -483,7 +483,7 @@ app.post("/patients/:id/records", async (req: Request, res: Response) => {
 });
 
 app.delete(
-  "/patients/:id/records/:date/odontogram/:toothNumber",
+  "/api/patients/:id/records/:date/odontogram/:toothNumber",
   async (req: Request, res: Response) => {
     const patientId = getRouteParam(req.params.id);
     const recordDate = getRouteParam(req.params.date);
