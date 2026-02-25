@@ -225,7 +225,7 @@ function buildReport(records: DailyRecord[]) {
 app.use(cors());
 app.use(express.json({ limit: "8mb" }));
 
-app.get("/", (_req: Request, res: Response) => {
+app.get("/api", (_req: Request, res: Response) => {
   res.json({
     ok: true,
     service: "diario-sorriso-backend",
@@ -233,11 +233,11 @@ app.get("/", (_req: Request, res: Response) => {
   });
 });
 
-app.get("/health", (_req: Request, res: Response) => {
+app.get("/api/health", (_req: Request, res: Response) => {
   res.json({ ok: true, service: "diario-sorriso-backend" });
 });
 
-app.post("/patients", async (req: Request, res: Response) => {
+app.post("/api/patients", async (req: Request, res: Response) => {
   const { name, sex, motherName, birthDate, notes, clinicalProfile } =
     req.body ?? {};
   const validSexes: PatientSex[] = ["feminino", "masculino", "outro"];
@@ -268,12 +268,12 @@ app.post("/patients", async (req: Request, res: Response) => {
   return res.status(201).json(patient);
 });
 
-app.get("/patients", async (_req: Request, res: Response) => {
+app.get("/api/patients", async (_req: Request, res: Response) => {
   const db = await readDb();
   res.json(db.patients);
 });
 
-app.get("/patients/:id", async (req: Request, res: Response) => {
+app.get("/api/patients/:id", async (req: Request, res: Response) => {
   const patientId = getRouteParam(req.params.id);
   if (!patientId) {
     return res.status(400).json({ message: "Parâmetro de paciente inválido." });
