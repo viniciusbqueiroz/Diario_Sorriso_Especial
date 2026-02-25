@@ -314,159 +314,165 @@ app.delete("/patients/:id", async (req: Request, res: Response) => {
 });
 
 app.post("/patients/:id/records", async (req: Request, res: Response) => {
-  const patientId = getRouteParam(req.params.id);
-  if (!patientId) {
-    return res.status(400).json({ message: "Parâmetro de paciente inválido." });
-  }
-
-  const db = await readDb();
-
-  const patientExists = db.patients.some((patient) => patient.id === patientId);
-  if (!patientExists) {
-    return res.status(404).json({ message: "Paciente não encontrado." });
-  }
-
-  const {
-    date,
-    brushed,
-    fear,
-    sleptWell,
-    ateTooMuchCandy,
-    mood,
-    triggers,
-    odontogram,
-    photoDataUrl,
-  } = req.body ?? {};
-
-  const validMoods: Mood[] = ["muito_bom", "bom", "neutro", "triste"];
-  const validTriggers: Trigger[] = ["barulho", "luz", "cheiro", "toque"];
-  const validSensitivity = ["nenhuma", "leve", "moderada", "alta"];
-
-  if (!date || typeof date !== "string") {
-    return res.status(400).json({ message: "Campo 'date' é obrigatório." });
-  }
-
-  if (!validMoods.includes(mood)) {
-    return res.status(400).json({ message: "Campo 'mood' inválido." });
-  }
-
-  if (
-    !Array.isArray(triggers) ||
-    triggers.some((trigger) => !validTriggers.includes(trigger))
-  ) {
-    return res.status(400).json({ message: "Campo 'triggers' inválido." });
-  }
-
-  if (odontogram !== undefined) {
-    if (!Array.isArray(odontogram)) {
-      return res.status(400).json({ message: "Campo 'odontogram' inválido." });
+  try {
+    const patientId = getRouteParam(req.params.id);
+    if (!patientId) {
+      console.error("Parâmetro de paciente inválido", req.params.id);
+      return res
+        .status(400)
+        .json({ message: "Parâmetro de paciente inválido." });
     }
 
-    const hasInvalidToothRecord = odontogram.some((item) => {
-      if (typeof item !== "object" || item === null) {
-        return true;
+    const db = await readDb();
+
+    const patientExists = db.patients.some(
+      (patient) => patient.id === patientId,
+    );
+    if (!patientExists) {
+      console.error("Paciente não encontrado", patientId);
+      return res.status(404).json({ message: "Paciente não encontrado." });
+    }
+
+    const {
+      date,
+      brushed,
+      fear,
+      sleptWell,
+      ateTooMuchCandy,
+      mood,
+      triggers,
+      odontogram,
+      photoDataUrl,
+    } = req.body ?? {};
+
+    const validMoods: Mood[] = ["muito_bom", "bom", "neutro", "triste"];
+    const validTriggers: Trigger[] = ["barulho", "luz", "cheiro", "toque"];
+    const validSensitivity = ["nenhuma", "leve", "moderada", "alta"];
+
+    // Se fornecido, validar mood
+    if (mood !== undefined && !validMoods.includes(mood)) {
+      console.error("Campo 'mood' inválido", mood);
+      return res.status(400).json({ message: "Campo 'mood' inválido." });
+    }
+
+    // Se fornecido, validar triggers
+    if (triggers !== undefined) {
+      if (
+        !Array.isArray(triggers) ||
+        triggers.some((trigger) => !validTriggers.includes(trigger))
+      ) {
+        console.error("Campo 'triggers' inválido", triggers);
+        return res.status(400).json({ message: "Campo 'triggers' inválido." });
+      }
+    }
+
+    if (odontogram !== undefined) {
+      if (!Array.isArray(odontogram)) {
+        console.error("Campo 'odontogram' inválido (não é array)", odontogram);
+        return res
+          .status(400)
+          .json({ message: "Campo 'odontogram' inválido." });
       }
 
-      const toothNumber = (item as { toothNumber?: unknown }).toothNumber;
-      const hasCaries = (item as { hasCaries?: unknown }).hasCaries;
-      const hasTooth = (item as { hasTooth?: unknown }).hasTooth;
-      const hasPain = (item as { hasPain?: unknown }).hasPain;
-      const sensitivity = (item as { sensitivity?: unknown }).sensitivity;
-      const notes = (item as { notes?: unknown }).notes;
+      const hasInvalidToothRecord = odontogram.some((item) => {
+        if (typeof item !== "object" || item === null) {
+          return true;
+        }
 
-      return (
-        typeof toothNumber !== "number" ||
-        !Number.isInteger(toothNumber) ||
-        toothNumber < 1 ||
-        toothNumber > 32 ||
-        typeof hasCaries !== "boolean" ||
-        typeof hasTooth !== "boolean" ||
-        typeof hasPain !== "boolean" ||
-        typeof sensitivity !== "string" ||
-        !validSensitivity.includes(sensitivity) ||
-        (notes !== undefined && typeof notes !== "string")
-      );
+        const toothNumber = (item as { toothNumber?: unknown }).toothNumber;
+        const hasCaries = (item as { hasCaries?: unknown }).hasCaries;
+        const hasTooth = (item as { hasTooth?: unknown }).hasTooth;
+        const hasPain = (item as { hasPain?: unknown }).hasPain;
+        const sensitivity = (item as { sensitivity?: unknown }).sensitivity;
+        const notes = (item as { notes?: unknown }).notes;
+
+        return (
+          typeof toothNumber !== "number" ||
+          !Number.isInteger(toothNumber) ||
+          toothNumber < 1 ||
+          toothNumber > 32 ||
+          typeof hasCaries !== "boolean" ||
+          typeof hasTooth !== "boolean" ||
+          typeof hasPain !== "boolean" ||
+          typeof sensitivity !== "string" ||
+          !validSensitivity.includes(sensitivity) ||
+          (notes !== undefined && typeof notes !== "string")
+        );
+      });
+
+      if (hasInvalidToothRecord) {
+        console.error("Campo 'odontogram' inválido (item)", odontogram);
+        return res
+          .status(400)
+          .json({ message: "Campo 'odontogram' inválido." });
+      }
+    }
+
+    if (photoDataUrl !== undefined) {
+      if (
+        typeof photoDataUrl !== "string" ||
+        photoDataUrl.trim().length === 0
+      ) {
+        console.error("Campo 'photoDataUrl' inválido", photoDataUrl);
+        return res
+          .status(400)
+          .json({ message: "Campo 'photoDataUrl' inválido." });
+      }
+
+      if (!photoDataUrl.startsWith("data:image/")) {
+        console.error(
+          "Campo 'photoDataUrl' deve ser imagem em data URL",
+          photoDataUrl,
+        );
+        return res.status(400).json({
+          message: "Campo 'photoDataUrl' deve ser imagem em data URL.",
+        });
+      }
+    }
+
+    const record: DailyRecord = {
+      id: randomUUID(),
+      patientId,
+      date,
+      brushed: Boolean(brushed),
+      fear: Boolean(fear),
+      sleptWell: Boolean(sleptWell),
+      ateTooMuchCandy: Boolean(ateTooMuchCandy),
+      mood,
+      triggers,
+      odontogram: Array.isArray(odontogram)
+        ? odontogram.map((item) => ({
+            toothNumber: item.toothNumber,
+            hasCaries: item.hasCaries,
+            hasTooth: item.hasTooth,
+            hasPain: item.hasPain,
+            sensitivity: item.sensitivity,
+            notes:
+              typeof item.notes === "string"
+                ? item.notes.trim() || undefined
+                : undefined,
+          }))
+        : undefined,
+      photoDataUrl:
+        typeof photoDataUrl === "string" ? photoDataUrl.trim() : undefined,
+      createdAt: new Date().toISOString(),
+    };
+
+    // Log do registro antes de salvar
+    console.log("Salvando registro:", record);
+
+    db.records.push(record);
+    await writeDb(db);
+
+    console.log("Registro salvo com sucesso");
+    return res.status(201).json(record);
+  } catch (err) {
+    console.error("Erro inesperado ao salvar registro:", err);
+    return res.status(500).json({
+      message: "Erro inesperado ao salvar registro.",
+      error: String(err),
     });
-
-    if (hasInvalidToothRecord) {
-      return res.status(400).json({ message: "Campo 'odontogram' inválido." });
-    }
   }
-
-  if (photoDataUrl !== undefined) {
-    if (typeof photoDataUrl !== "string" || photoDataUrl.trim().length === 0) {
-      return res
-        .status(400)
-        .json({ message: "Campo 'photoDataUrl' inválido." });
-    }
-
-    if (!photoDataUrl.startsWith("data:image/")) {
-      return res
-        .status(400)
-        .json({ message: "Campo 'photoDataUrl' deve ser imagem em data URL." });
-    }
-  }
-
-  const record: DailyRecord = {
-    id: randomUUID(),
-    patientId,
-    date,
-    brushed: Boolean(brushed),
-    fear: Boolean(fear),
-    sleptWell: Boolean(sleptWell),
-    ateTooMuchCandy: Boolean(ateTooMuchCandy),
-    mood,
-    triggers,
-    odontogram: Array.isArray(odontogram)
-      ? odontogram.map((item) => ({
-          toothNumber: item.toothNumber,
-          hasCaries: item.hasCaries,
-          hasTooth: item.hasTooth,
-          hasPain: item.hasPain,
-          sensitivity: item.sensitivity,
-          notes:
-            typeof item.notes === "string"
-              ? item.notes.trim() || undefined
-              : undefined,
-        }))
-      : undefined,
-    photoDataUrl:
-      typeof photoDataUrl === "string" ? photoDataUrl.trim() : undefined,
-    createdAt: new Date().toISOString(),
-  };
-
-  db.records.push(record);
-  await writeDb(db);
-
-  return res.status(201).json(record);
-});
-
-app.get("/patients/:id/records", async (req: Request, res: Response) => {
-  const patientId = getRouteParam(req.params.id);
-  if (!patientId) {
-    return res.status(400).json({ message: "Parâmetro de paciente inválido." });
-  }
-
-  const db = await readDb();
-  const date = getDateQueryParam(req.query.date);
-
-  if (date && !isValidIsoDate(date)) {
-    return res.status(400).json({ message: "Query param 'date' inválido." });
-  }
-
-  const patientExists = db.patients.some((patient) => patient.id === patientId);
-  if (!patientExists) {
-    return res.status(404).json({ message: "Paciente não encontrado." });
-  }
-
-  const records = db.records
-    .filter(
-      (record) =>
-        record.patientId === patientId && (!date || record.date === date),
-    )
-    .sort((a, b) => b.date.localeCompare(a.date));
-
-  return res.json(records);
 });
 
 app.delete(

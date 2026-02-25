@@ -788,7 +788,7 @@ export default function App() {
     setIsSyncing(true);
 
     try {
-      await createRecord(selectedPatientId, {
+      const payload = {
         date: selectedDate,
         brushed,
         fear,
@@ -798,7 +798,11 @@ export default function App() {
         triggers: selectedTriggers,
         odontogram: odontogramRecords,
         photoDataUrl: photoDataUrl ?? undefined,
-      });
+      };
+      // Log do payload enviado
+      // eslint-disable-next-line no-console
+      console.log("Payload enviado para createRecord:", payload);
+      await createRecord(selectedPatientId, payload);
 
       const records = await fetchRecords(selectedPatientId);
       setEntries(mapRecordsToEntries(records));
@@ -807,12 +811,17 @@ export default function App() {
       navigateStep("progress");
       Alert.alert("Diário salvo", "Registro enviado para o backend.");
     } catch (error) {
-      const message =
+      let message =
         error instanceof Error
           ? error.message
           : "Não foi possível salvar no backend.";
+      // Log detalhado para depuração
+      if (error && typeof error === "object") {
+        // eslint-disable-next-line no-console
+        console.error("Erro ao salvar registro:", error);
+      }
       setSyncError(message);
-      Alert.alert("Erro", message);
+      Alert.alert("Erro", message + "\nVeja o console para detalhes.");
     } finally {
       setIsSyncing(false);
     }
