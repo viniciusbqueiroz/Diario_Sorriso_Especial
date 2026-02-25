@@ -14,7 +14,7 @@ Servidor padrão: `http://localhost:3333`
 
 ## Deploy (Render)
 
-O projeto já inclui `backend/render.yaml` para deploy direto.
+O projeto inclui `render.yaml` na raiz do repositório para deploy via Blueprint.
 
 1. Suba o repositório para GitHub.
 2. No Render, clique em **New +** → **Blueprint** e selecione o repositório.
@@ -29,13 +29,19 @@ O projeto já inclui `backend/render.yaml` para deploy direto.
 
 ### Conectar o app mobile ao backend hospedado
 
-No projeto Expo (`meu-app`), configure o `.env` com:
+No projeto Expo (`meu-app`), configure o `.env` com a URL pública do backend:
 
 ```dotenv
 EXPO_PUBLIC_API_URL=https://SEU-BACKEND.onrender.com
 ```
 
 Depois reinicie o Expo para recarregar variáveis de ambiente.
+
+Exemplo:
+
+```dotenv
+EXPO_PUBLIC_API_URL=https://diario-sorriso-backend.onrender.com
+```
 
 ## Rotas principais
 
