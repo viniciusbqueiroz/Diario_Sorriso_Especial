@@ -289,7 +289,7 @@ app.get("/api/patients/:id", async (req: Request, res: Response) => {
   return res.json(patient);
 });
 
-app.delete("/patients/:id", async (req: Request, res: Response) => {
+app.delete("/api/patients/:id", async (req: Request, res: Response) => {
   const patientId = getRouteParam(req.params.id);
   if (!patientId) {
     return res.status(400).json({ message: "Parâmetro de paciente inválido." });
