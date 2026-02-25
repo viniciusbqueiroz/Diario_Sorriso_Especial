@@ -21,9 +21,25 @@ O projeto inclui `vercel.json` e `api/index.ts` para deploy do backend na Vercel
 3. Defina o **Root Directory** como `backend`.
 4. Faça o deploy e copie a URL pública (ex.: `https://diario-sorriso-especial.vercel.app`).
 
+### Banco gratuito (Supabase)
+
+Para persistência real em produção, use Supabase (Postgres gratuito).
+
+1. Crie um projeto no Supabase.
+2. No SQL Editor, execute o script em `backend/supabase.sql`.
+3. Na Vercel, configure as variáveis de ambiente do backend:
+
+```dotenv
+SUPABASE_URL=https://SEU-PROJETO.supabase.co
+SUPABASE_SERVICE_ROLE_KEY=SUA_SERVICE_ROLE_KEY
+```
+
+Com essas variáveis, o backend passa a usar Supabase automaticamente.
+
 ### Persistência de dados
 
 - O backend usa arquivo JSON local.
+- Com `SUPABASE_URL` + `SUPABASE_SERVICE_ROLE_KEY`, ele usa Supabase.
 - Na Vercel, o filesystem é efêmero; os dados podem ser perdidos entre execuções.
 - Na Vercel, sem `DB_FILE_PATH`, o backend usa `/tmp/db.json` automaticamente.
 - Se preferir, você pode definir `DB_FILE_PATH=/tmp/db.json` manualmente.

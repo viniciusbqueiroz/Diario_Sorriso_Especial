@@ -237,7 +237,7 @@ app.get("/health", (_req: Request, res: Response) => {
   res.json({ ok: true, service: "diario-sorriso-backend" });
 });
 
-app.post("/patients", (req: Request, res: Response) => {
+app.post("/patients", async (req: Request, res: Response) => {
   const { name, sex, motherName, birthDate, notes, clinicalProfile } =
     req.body ?? {};
   const validSexes: PatientSex[] = ["feminino", "masculino", "outro"];
@@ -250,7 +250,7 @@ app.post("/patients", (req: Request, res: Response) => {
     return res.status(400).json({ message: "Campo 'sex' inválido." });
   }
 
-  const db = readDb();
+  const db = await readDb();
   const patient = {
     id: randomUUID(),
     name: name.trim(),
@@ -263,23 +263,23 @@ app.post("/patients", (req: Request, res: Response) => {
   };
 
   db.patients.push(patient);
-  writeDb(db);
+  await writeDb(db);
 
   return res.status(201).json(patient);
 });
 
-app.get("/patients", (_req: Request, res: Response) => {
-  const db = readDb();
+app.get("/patients", async (_req: Request, res: Response) => {
+  const db = await readDb();
   res.json(db.patients);
 });
 
-app.get("/patients/:id", (req: Request, res: Response) => {
+app.get("/patients/:id", async (req: Request, res: Response) => {
   const patientId = getRouteParam(req.params.id);
   if (!patientId) {
     return res.status(400).json({ message: "Parâmetro de paciente inválido." });
   }
 
-  const db = readDb();
+  const db = await readDb();
   const patient = db.patients.find((item) => item.id === patientId);
 
   if (!patient) {
@@ -289,13 +289,13 @@ app.get("/patients/:id", (req: Request, res: Response) => {
   return res.json(patient);
 });
 
-app.delete("/patients/:id", (req: Request, res: Response) => {
+app.delete("/patients/:id", async (req: Request, res: Response) => {
   const patientId = getRouteParam(req.params.id);
   if (!patientId) {
     return res.status(400).json({ message: "Parâmetro de paciente inválido." });
   }
 
-  const db = readDb();
+  const db = await readDb();
   const patientIndex = db.patients.findIndex((item) => item.id === patientId);
 
   if (patientIndex < 0) {
@@ -305,7 +305,7 @@ app.delete("/patients/:id", (req: Request, res: Response) => {
   const removedPatient = db.patients[patientIndex];
   db.patients.splice(patientIndex, 1);
   db.records = db.records.filter((record) => record.patientId !== patientId);
-  writeDb(db);
+  await writeDb(db);
 
   return res.json({
     message: "Paciente removido com sucesso.",
@@ -313,13 +313,13 @@ app.delete("/patients/:id", (req: Request, res: Response) => {
   });
 });
 
-app.post("/patients/:id/records", (req: Request, res: Response) => {
+app.post("/patients/:id/records", async (req: Request, res: Response) => {
   const patientId = getRouteParam(req.params.id);
   if (!patientId) {
     return res.status(400).json({ message: "Parâmetro de paciente inválido." });
   }
 
-  const db = readDb();
+  const db = await readDb();
 
   const patientExists = db.patients.some((patient) => patient.id === patientId);
   if (!patientExists) {
@@ -436,18 +436,18 @@ app.post("/patients/:id/records", (req: Request, res: Response) => {
   };
 
   db.records.push(record);
-  writeDb(db);
+  await writeDb(db);
 
   return res.status(201).json(record);
 });
 
-app.get("/patients/:id/records", (req: Request, res: Response) => {
+app.get("/patients/:id/records", async (req: Request, res: Response) => {
   const patientId = getRouteParam(req.params.id);
   if (!patientId) {
     return res.status(400).json({ message: "Parâmetro de paciente inválido." });
   }
 
-  const db = readDb();
+  const db = await readDb();
   const date = getDateQueryParam(req.query.date);
 
   if (date && !isValidIsoDate(date)) {
@@ -471,7 +471,7 @@ app.get("/patients/:id/records", (req: Request, res: Response) => {
 
 app.delete(
   "/patients/:id/records/:date/odontogram/:toothNumber",
-  (req: Request, res: Response) => {
+  async (req: Request, res: Response) => {
     const patientId = getRouteParam(req.params.id);
     const recordDate = getRouteParam(req.params.date);
     const toothNumberParam = getRouteParam(req.params.toothNumber);
@@ -493,7 +493,7 @@ app.delete(
         .json({ message: "Parâmetro 'toothNumber' inválido." });
     }
 
-    const db = readDb();
+    const db = await readDb();
     const patientExists = db.patients.some(
       (patient) => patient.id === patientId,
     );
@@ -532,7 +532,7 @@ app.delete(
         .json({ message: "Dente não encontrado no registro." });
     }
 
-    writeDb(db);
+    await writeDb(db);
 
     return res.json({
       date: recordDate,
@@ -543,13 +543,13 @@ app.delete(
   },
 );
 
-app.get("/reports/:patientId", (req: Request, res: Response) => {
+app.get("/reports/:patientId", async (req: Request, res: Response) => {
   const patientId = getRouteParam(req.params.patientId);
   if (!patientId) {
     return res.status(400).json({ message: "Parâmetro de paciente inválido." });
   }
 
-  const db = readDb();
+  const db = await readDb();
   const date = getDateQueryParam(req.query.date);
 
   if (date && !isValidIsoDate(date)) {
