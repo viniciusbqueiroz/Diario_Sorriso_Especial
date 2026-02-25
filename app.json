@@ -1,12 +1,20 @@
 {
   "expo": {
-    "name": "meu-app",
-    "slug": "meu-app",
+    "name": "Diário do Sorriso Especial",
+    "slug": "diario-do-sorriso-especial",
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
     "userInterfaceStyle": "light",
     "newArchEnabled": true,
+    "plugins": [
+      [
+        "expo-image-picker",
+        {
+          "cameraPermission": "Permita acesso à câmera para registrar a foto diária do paciente."
+        }
+      ]
+    ],
     "splash": {
       "image": "./assets/splash-icon.png",
       "resizeMode": "contain",
