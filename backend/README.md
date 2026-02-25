@@ -12,27 +12,28 @@ npm run dev
 
 Servidor padrão: `http://localhost:3333`
 
-## Deploy (Render)
+## Deploy (Vercel)
 
-O projeto inclui `render.yaml` na raiz do repositório para deploy via Blueprint.
+O projeto inclui `vercel.json` e `api/index.ts` para deploy do backend na Vercel.
 
 1. Suba o repositório para GitHub.
-2. No Render, clique em **New +** → **Blueprint** e selecione o repositório.
-3. Confirme a criação do serviço `diario-sorriso-backend`.
-4. Aguarde o build e copie a URL pública (ex.: `https://diario-sorriso-backend.onrender.com`).
+2. Na Vercel, clique em **Add New...** → **Project** e importe o repositório.
+3. Defina o **Root Directory** como `backend`.
+4. Faça o deploy e copie a URL pública (ex.: `https://diario-sorriso-backend.vercel.app`).
 
 ### Persistência de dados
 
 - O backend usa arquivo JSON local.
-- Em produção, ele usa `DB_FILE_PATH=/var/data/db.json` (já definido no `render.yaml`).
-- Isso exige disco persistente, por isso o plano está definido como `starter` no `render.yaml`.
+- Na Vercel, o filesystem é efêmero; os dados podem ser perdidos entre execuções.
+- Para testes, você pode usar `DB_FILE_PATH=/tmp/db.json`.
+- Para produção, o ideal é migrar para banco externo (Postgres, Neon, Supabase, etc.).
 
 ### Conectar o app mobile ao backend hospedado
 
 No projeto Expo (`meu-app`), configure o `.env` com a URL pública do backend:
 
 ```dotenv
-EXPO_PUBLIC_API_URL=https://SEU-BACKEND.onrender.com
+EXPO_PUBLIC_API_URL=https://SEU-BACKEND.vercel.app
 ```
 
 Depois reinicie o Expo para recarregar variáveis de ambiente.
@@ -40,7 +41,7 @@ Depois reinicie o Expo para recarregar variáveis de ambiente.
 Exemplo:
 
 ```dotenv
-EXPO_PUBLIC_API_URL=https://diario-sorriso-backend.onrender.com
+EXPO_PUBLIC_API_URL=https://diario-sorriso-backend.vercel.app
 ```
 
 ## Rotas principais

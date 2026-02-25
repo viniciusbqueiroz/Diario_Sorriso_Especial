@@ -23,7 +23,9 @@ function getDevMachineUrl(): string | null {
 
 export const API_BASE_URL =
   process.env.EXPO_PUBLIC_API_URL ??
-  getDevMachineUrl() ??
-  (Platform.OS === "android"
-    ? "http://10.0.2.2:3333"
-    : "http://localhost:3333");
+  (__DEV__
+    ? getDevMachineUrl() ??
+      (Platform.OS === "android"
+        ? "http://10.0.2.2:3333"
+        : "http://localhost:3333")
+    : "https://diario-sorriso-backend.vercel.app");

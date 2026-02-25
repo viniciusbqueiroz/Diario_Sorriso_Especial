@@ -568,6 +568,10 @@ app.get("/reports/:patientId", (req: Request, res: Response) => {
   });
 });
 
-app.listen(PORT, () => {
-  console.log(`Backend rodando em http://localhost:${PORT}`);
-});
+if (!process.env.VERCEL) {
+  app.listen(PORT, () => {
+    console.log(`Backend rodando em http://localhost:${PORT}`);
+  });
+}
+
+export default app;
